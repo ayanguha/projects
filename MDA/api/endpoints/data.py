@@ -10,7 +10,7 @@ from flask_restplus import Api
 api = Api(version='1.0', title='ETL MEta',doc='/doc/',description='ETL Meta API')
 
 
-ns = api.namespace('api', description='Operations: Audit records')
+ns = api.namespace('api/artefact', description='Operations: Audit records')
 
 ArtefactRecordRequest = api.model('Artefact Record ', {
     'name': fields.String(required=True, description='Artefact Name'),
@@ -19,7 +19,7 @@ ArtefactRecordRequest = api.model('Artefact Record ', {
     'updatedOn': fields.DateTime(required=False, description='Artefact Update Date')
 })
 
-@ns.route('/artefact')
+@ns.route('/')
 class Artefact(Resource):
     @api.expect(ArtefactRecordRequest)
     def post(self):
@@ -31,7 +31,7 @@ class Artefact(Resource):
         response = getAllArtefact()
         return response, 200
 
-@ns.route('/artefact/<string:artefact_id>')
+@ns.route('/<string:artefact_id>')
 class SingleArtefact(Resource):
     def get(self,artefact_id):
         response = getSingleArtefact(artefact_id)
@@ -45,13 +45,13 @@ class SingleArtefact(Resource):
         response = deleteSingleArtefact(artefact_id)
         return response, 200
 
-@ns.route('/artefact/<string:artefact_id>/artefact_property/multi_create')
+@ns.route('/<string:artefact_id>/artefact_property/multi_create')
 class ArtefactDetailsMultiCreate(Resource):
     def post(self,artefact_id):
         print request.json
         response = createArtefactPropertyMultiCreate(artefact_id,request)
 
-@ns.route('/artefact/<string:artefact_id>/artefact_property')
+@ns.route('/<string:artefact_id>/artefact_property')
 class ArtefactDetails(Resource):
     def post(self,artefact_id):
         print request.json
@@ -61,7 +61,7 @@ class ArtefactDetails(Resource):
         response = getAllArtefactProperty(artefact_id)
         return response, 200
 
-@ns.route('/artefact/<string:artefact_id>/artefact_property/<string:artefact_property_id>')
+@ns.route('/<string:artefact_id>/artefact_property/<string:artefact_property_id>')
 class SingleArtefactDetail(Resource):
     def get(self,artefact_id,artefact_property_id):
         response = getSingleArtefactProperty(artefact_id,artefact_property_id)
@@ -75,7 +75,7 @@ class SingleArtefactDetail(Resource):
         response = deleteSingleArtefactProperty(artefact_id,artefact_property_id)
         return response, 200
 
-@ns.route('/artefact/<string:artefact_id>/artefact_schema')
+@ns.route('/<string:artefact_id>/artefact_schema')
 class ArtefactSchema(Resource):
     def post(self,artefact_id):
         print request.json
@@ -84,7 +84,7 @@ class ArtefactSchema(Resource):
         print request.json
         response = getArtefactSchema(artefact_id)
 
-@ns.route('/artefact/<string:artefact_id>/artefact_schema/<string:field_id>')
+@ns.route('/<string:artefact_id>/artefact_schema/<string:field_id>')
 class ArtefactSchemaField(Resource):
     def get(self,artefact_id,field_id):
         response = getSingleArtefactSchemaField(artefact_id,field_id)
@@ -98,7 +98,7 @@ class ArtefactSchemaField(Resource):
         response = deleteSingleArtefactSchemaField(artefact_id,field_id)
         return response, 200
 
-@ns.route('/artefact/<string:artefact_id>/parent')
+@ns.route('/<string:artefact_id>/parent')
 class ArtefactParent(Resource):
     def post(self,artefact_id):
         print request.json
@@ -108,19 +108,13 @@ class ArtefactParent(Resource):
         response = getAllArtefactParent(artefact_id)
         return response, 200
 
-@ns.route('/artefact/<string:artefact_id>/parent/<string:parent_id>')
+@ns.route('/<string:artefact_id>/parent/<string:parent_id>')
 class ArtefactSingleParent(Resource):
     def delete(self,artefact_id,parent_id):
         response = deleteSingleArtefactParent(artefact_id,parent_id)
         return response, 200
 
-@ns.route('/artefact/<string:artefact_id>/parent/pending')
-class ArtefactParentPending(Resource):
-    def get(self,artefact_id):
-        response = getAllArtefactParentPending(artefact_id)
-        return response, 200
-
-@ns.route('/artefact<string:artefact_id>/schedule_unit')
+@ns.route('/<string:artefact_id>/schedule_unit')
 class ArtefactScheduleUnit(Resource):
     def post(self,artefact_id):
         print request.json
@@ -130,8 +124,18 @@ class ArtefactScheduleUnit(Resource):
         response = getAllArtefactScheduleUnit(artefact_id)
         return response, 200
 
-@ns.route('/artefact<string:artefact_id>/schedule_unit/<string:status>')
+@ns.route('/<string:artefact_id>/schedule_unit/<string:status>')
 class ArtefactScheduleUnitByStatus(Resource):
     def get(self,artefact_id,status):
         response = getArtefactScheduleUnitByStatus(artefact_id,status)
+        return response, 200
+
+@ns.route('/<string:artefact_id>/schedule_unit/<string:schedule_unit_id>/parent')
+class ArtefactScheduleUnitParent(Resource):
+    def post(self,artefact_id,schedule_unit_id):
+        print request.json
+        response = createArtefactScheduleUnitParent(artefact_id,schedule_unit_id,request)
+
+    def get(self):
+        response = getAllArtefactScheduleUnitParent(artefact_id,schedule_unit_id)
         return response, 200

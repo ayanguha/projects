@@ -28,7 +28,7 @@ def __DestringifyArrayStruct__(s):
     return arr
 
 class Artefact(db.Model):
-    id = db.Column(db.String(255), primary_key=True)
+    artefact_id = db.Column(db.String(255), primary_key=True)
     name = db.Column(db.String(255), unique=True, nullable=False)
     operational_status = db.Column(db.String(255), unique=False, nullable=False)
     postedOn = db.Column(db.DateTime(), unique=False, nullable=False)
@@ -36,17 +36,28 @@ class Artefact(db.Model):
 
 
     def __init__(self,payload):
-        self.id = str(uuid.uuid4())
+        self.artefact_id = str(uuid.uuid4())
         self.name = payload['name']
         self.operational_status = 'CREATED'
         self.postedOn = datetime.now()
         self.updatedOn = datetime.now()
 
-    @property
-    def serialize(self):
-       return {'id': self.id,
-               'name': self.name,
-               'operational_status': self.operational_status,
-               'postedOn' : __datetime2str__(self.postedOn),
-               'postedOn' : __datetime2str__(self.updatedOn)
-              }
+
+
+
+class ArtefactProperty(db.Model):
+    artefact_property_id = db.Column(db.String(255), primary_key=True)
+    artefact_id = db.Column(db.String(255), nullable=False)
+    property_name = db.Column(db.String(255), unique=False, nullable=False)
+    property_value = db.Column(db.String(255), unique=False, nullable=False)
+    postedOn = db.Column(db.DateTime(), unique=False, nullable=False)
+    updatedOn = db.Column(db.DateTime(), unique=False, nullable=False)
+
+
+    def __init__(self,artefact_id,payload):
+        self.artefact_property_id = str(uuid.uuid4())
+        self.artefact_id = artefact_id
+        self.property_name = payload['property_name']
+        self.property_value = payload['property_value']
+        self.postedOn = datetime.now()
+        self.updatedOn = datetime.now()

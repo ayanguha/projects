@@ -19,14 +19,41 @@ ArtefactRecordRequest = api.model('Artefact Record ', {
     'updatedOn': fields.DateTime(required=False, description='Artefact Update Date')
 })
 
+ArtefactRecord = api.model('Artefact Record With Id', {
+    'artefact_id': fields.String(),
+    'name': fields.String(),
+    'operational_status': fields.String(),
+    'postedOn': fields.DateTime(),
+    'updatedOn': fields.DateTime()
+})
+
+ArtefactPropertyRecordRequest = api.model('Artefact Property Record ', {
+    'property_name': fields.String(required=True),
+    'property_value': fields.String(required=False),
+    'postedOn': fields.DateTime(required=False),
+    'updatedOn': fields.DateTime(required=False)
+})
+
+ArtefactPropertyListRecordRequest = api.model('Artefact Property List Record ', {
+    'propert_list': fields.List(fields.Nested(ArtefactPropertyRecordRequest))
+})
+
+ArtefactPropertyRecord = api.model('Artefact Property Record With Id', {
+    'artefact_id': fields.String(required=True),
+    'artefact_property_id': fields.String(required=True),
+    'property_name': fields.String(required=True),
+    'property_value': fields.String(required=False),
+    'postedOn': fields.DateTime(required=False),
+    'updatedOn': fields.DateTime(required=False)
+})
+
 @ns.route('/')
 class Artefact(Resource):
     @api.expect(ArtefactRecordRequest)
     def post(self):
-        print request.json
         response = createArtefact(request)
         return response,201
-
+    @api.marshal_with(ArtefactRecord, as_list=True)
     def get(self):
         response = getAllArtefact()
         return response, 200
@@ -46,17 +73,22 @@ class SingleArtefact(Resource):
         return response, 200
 
 @ns.route('/<string:artefact_id>/artefact_property/multi_create')
-class ArtefactDetailsMultiCreate(Resource):
+class ArtefactPropertyMultiCreate(Resource):
+    @api.expect(ArtefactPropertyListRecordRequest)
     def post(self,artefact_id):
-        print request.json
-        response = createArtefactPropertyMultiCreate(artefact_id,request)
+        response = createArtefactPropertyMultiCreate(artefact_id,request.json.get('property_list'))
 
 @ns.route('/<string:artefact_id>/artefact_property')
-class ArtefactDetails(Resource):
+class ArtefactProperty(Resource):
+    @api.expect(ArtefactPropertyRecordRequest)
     def post(self,artefact_id):
-        print request.json
-        response = createArtefactProperty(artefact_id,request)
+        payload = {}
+        payload['property_name'] = request.json.get('property_name')
+        payload['property_value'] = request.json.get('property_value')
+        response = createArtefactProperty(artefact_id,payload)
+        return response,201
 
+    @api.marshal_with(ArtefactPropertyRecord, as_list=True)
     def get(self,artefact_id):
         response = getAllArtefactProperty(artefact_id)
         return response, 200

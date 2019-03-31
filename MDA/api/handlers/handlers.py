@@ -38,18 +38,44 @@ def createArtefact(request):
     payload = {}
     payload['name'] = request.json.get('name')
     r = Artefact(payload)
-    print r.id
     db.session.add(r)
     db.session.commit()
-    return { "artedact_id" : r.id}
+    return { "artedact_id" : r.artefact_id}
 
 
 def getAllArtefact():
+    createAllModels(db)
     qryRes = Artefact\
                   .query\
                   .all()
+    print qryRes
+    if qryRes:
+        return qryRes  #[i.serialize for i in qryRes]
+    else:
+        pass
+
+
+def createArtefactProperty(artefact_id,payload):
+    r = ArtefactProperty(artefact_id,payload)
+    db.session.add(r)
+    db.session.commit()
+    return { "artefact_property_id" : r.artefact_property_id}
+
+def createArtefactPropertyMultiCreate(artefact_id,payload_list):
+    l = []
+    print payload_list
+    for p in payload_list:
+        apid = createArtefactProperty(artefact_id,p)
+        l.append(apid)
+    return l
+
+def getAllArtefactProperty(artefact_id):
+    qryRes = ArtefactProperty\
+                  .query\
+                  .filter_by(artefact_id=artefact_id)\
+                  .all()
 
     if qryRes:
-        return [i.serialize for i in qryRes]
+        return qryRes  
     else:
-        raise NoResultFound
+        pass

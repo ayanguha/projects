@@ -1,8 +1,6 @@
 from ..database import db
-from ..database.models import *
+from ..database.orms import *
 from sqlalchemy.orm.exc import NoResultFound
-from flask_restplus import fields
-
 from flask_restplus import reqparse
 from datetime import datetime
 
@@ -76,6 +74,6 @@ def getAllArtefactProperty(artefact_id):
                   .all()
 
     if qryRes:
-        return qryRes  
+        return qryRes
     else:
         pass
